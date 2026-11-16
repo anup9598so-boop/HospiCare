@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <!-- ===== Basic document setup ===== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HospiCare - manage your health records and book appointments with specialist doctors across partner hospitals. A place to live again.">
+  <title>HospiCare | A Place to Live Again</title>
+
+  <!-- ===== Google Fonts: Space Grotesk (headings) + Inter (body) ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+  /* =====================================================================
+     1. DESIGN TOKENS (CSS custom properties)
+     Dark "Neon Night" theme is the default; light theme overrides below.
+     ===================================================================== */
+  :root {
+    --bg: #0b0b1a;             /* deep space background */
+    --card: #1a1a2e;           /* dark navy cards */
+    --card-hover: #22223d;
+    --text: #e8e8f2;
+    --muted: #9a9ab3;
+    --primary: #00d9ff;        /* neon cyan */
+    --primary-rgb: 0, 217, 255;
+    --accent: #ff00aa;         /* neon magenta */
+    --accent-rgb: 255, 0, 170;
+    --border: rgba(0, 217, 255, 0.18);
+    --nav-bg: rgba(11, 11, 26, 0.85);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --section-pad: 90px;       /* consistent vertical rhythm */
+    --container: 1200px;
+    --transition: 0.3s ease;
+    --font-head: "Space Grotesk", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+
+  [data-theme="light"] {
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --card-hover: #eef4fa;
+    --text: #0b0b1a;
+    --muted: #4a4a63;
+    --primary: #0097b8;        /* darker cyan keeps contrast on white */
+    --primary-rgb: 0, 151, 184;
+    --accent: #d6007f;
+    --accent-rgb: 214, 0, 127;
+    --border: rgba(0, 151, 184, 0.25);
+    --nav-bg: rgba(255, 255, 255, 0.92);
+    --shadow: 0 12px 32px rgba(15, 20, 50, 0.1);
+  }
+
+  /* =====================================================================
+     2. BASE RESET & TYPOGRAPHY
+     ===================================================================== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    transition: background var(--transition), color var(--transition);
+  }
+  h1, h2, h3, h4 { font-family: var(--font-head); line-height: 1.2; font-weight: 700; }
+  h1 { font-size: clamp(2.4rem, 5vw, 4rem); }
+  h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+  h3 { font-size: 1.2rem; }
+  p { color: var(--muted); }
+  a { color: var(--primary); text-decoration: none; transition: color var(--transition); }
+  a:hover { color: var(--accent); }
+  img { max-width: 100%; display: block; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+  .container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+  .section { padding: var(--section-pad) 0; }
+  .section-alt { background: linear-gradient(180deg, transparent, rgba(var(--primary-rgb), 0.04), transparent); }
+  .section-head { text-align: center; max-width: 680px; margin: 0 auto 56px; }
+  .eyebrow {
+    display: inline-block; font-size: 0.8rem; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+  }
+  .section-head p { margin-top: 14px; }
+
+  /* =====================================================================
+     3. BUTTONS & SHARED COMPONENTS
+     ===================================================================== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 26px; border-radius: 999px; border: 1px solid transparent;
+    font-weight: 600; font-size: 0.95rem; cursor: pointer; text-decoration: none;
+    transition: transform var(--transition), box-shadow var(--transition), background var(--transition), color var(--transition);
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0b0b1a;
+    box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.3);
+  }
+  .btn-primary:hover { color: #0b0b1a; box-shadow: 0 12px 30px rgba(var(--accent-rgb), 0.4); }
+  .btn-outline { background: transparent; border-color: var(--primary); color: var(--primary); }
+  .btn-outline:hover { background: rgba(var(--primary-rgb), 0.12); color: var(--primary); }
+  .btn-sm { padding: 9px 18px; font-size: 0.85rem; }
+  .btn-block { width: 100%; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px; box-shadow: var(--shadow);
+    transition: transform var(--transition), border-color var(--transition), background var(--transition);
+  }
+  .card:hover { transform: translateY(-6px); border-color: var(--primary); }
+
+  .grid { display: grid; gap: 24px; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+  .icon-badge {
+    width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center;
+    font-size: 1.5rem; margin-bottom: 18px;
+    background: rgba(var(--primary-rgb), 0.12); color: var(--primary);
+  }
+
+  /* Page-level section visibility: only the active "page" is shown */
+  .page { display: none; }
+  .page.active { display: block; animation: pageIn 0.5s ease; }
+  @keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* Page hero banner used on inner pages */
+  .page-hero {
+    padding: 150px 0 70px; text-align: center;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb), 0.18), transparent 40%),
+      radial-gradient(circle at 80% 30%, rgba(var(--primary-rgb), 0.18), transparent 40%),
+      var(--bg);
+  }
+  .page-hero p { max-width: 640px; margin: 16px auto 0; }
+
+  /* =====================================================================
+     4. PRELOADER
+     ===================================================================== */
+  .preloader {
+    position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  .preloader.hide { opacity: 0; visibility: hidden; }
+  .loader-ring {
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 4px solid rgba(var(--primary-rgb), 0.2); border-top-color: var(--primary);
+    border-right-color: var(--accent); animation: spin 0.9s linear infinite;
+  }
+  .preloader p { font-family: var(--font-head); letter-spacing: 3px; color: var(--primary); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* =====================================================================
+     5. NAVBAR (fixed top) + hamburger
+     ===================================================================== */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow var(--transition), background var(--transition);
+  }
+  .navbar.scrolled { box-shadow: var(--shadow); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 74px; }
+  .logo {
+    font-family: var(--font-head); font-size: 1.6rem; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo::before {
+    content: "+"; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0b0b1a; font-size: 1.4rem;
+    box-shadow: 0 0 18px rgba(var(--primary-rgb), 0.5);
+  }
+  .logo span { color: var(--primary); }
+  .logo:hover { color: var(--text); }
+  .nav-links { display: flex; gap: 6px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); font-weight: 500; font-size: 0.92rem; padding: 8px 12px;
+    border-radius: 8px; position: relative;
+  }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 12px; right: 12px; bottom: 2px; height: 2px;
+    background: var(--accent); transform: scaleX(0); transition: transform var(--transition);
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  .nav-links a.active::after, .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border);
+    background: transparent; cursor: pointer; font-size: 1.05rem; display: grid; place-items: center;
+    transition: transform var(--transition), border-color var(--transition);
+  }
+  .icon-btn:hover { transform: rotate(20deg); border-color: var(--primary); }
+
+  .hamburger {
+    display: none; width: 40px; height: 40px; background: transparent; border: none; cursor: pointer;
+    flex-direction: column; justify-content: center; gap: 5px;
+  }
+  .hamburger span {
+    display: block; height: 2px; width: 24px; margin: 0 auto; background: var(--text);
+    border-radius: 2px; transition: transform var(--transition), opacity var(--transition);
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* =====================================================================
+     6. HOME HERO (animated gradient + parallax background layer)
+     ===================================================================== */
+  .hero {
+    position: relative; min-height: 100vh; display: flex; align-items: center;
+    padding: 120px 0 80px; overflow: hidden;
+    background: linear-gradient(-45deg, #0b0b1a, #1a0a2e, #0a1a2e, #0b0b1a);
+    background-size: 400% 400%; animation: gradientShift 14s ease infinite;
+  }
+  [data-theme="light"] .hero {
+    background: linear-gradient(-45deg, #e8f7fc, #fbe9f5, #e6f4fa, #f4f7fb);
+    background-size: 400% 400%;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+  }
+  /* Parallax layer: JS moves this element on scroll */
+  .hero-bg {
+    position: absolute; inset: -10% 0; pointer-events: none; will-change: transform;
+    background:
+      radial-gradient(circle at 15% 30%, rgba(var(--primary-rgb), 0.25), transparent 35%),
+      radial-gradient(circle at 85% 70%, rgba(var(--accent-rgb), 0.25), transparent 35%);
+  }
+  .hero-grid-lines {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.25;
+    background-image:
+      linear-gradient(rgba(var(--primary-rgb), 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--primary-rgb), 0.15) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 75%);
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 680px; }
+  .hero h1 span {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero .lead { font-size: 1.15rem; margin: 22px 0 36px; max-width: 580px; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 36px; }
+  .tag {
+    font-size: 0.82rem; padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted); background: var(--card);
+  }
+
+  /* Stats */
+  .stats { margin-top: -50px; position: relative; z-index: 3; }
+  .stat-card { text-align: center; padding: 30px 20px; }
+  .stat-num {
+    font-family: var(--font-head); font-size: 2.6rem; font-weight: 700; color: var(--primary);
+    text-shadow: 0 0 18px rgba(var(--primary-rgb), 0.35);
+  }
+  .stat-num small { font-size: 1.4rem; color: var(--accent); }
+  .stat-card p { font-size: 0.92rem; margin-top: 4px; }
+
+  /* Service cards */
+  .service-card h3 { margin-bottom: 10px; }
+  .service-card .more { display: inline-block; margin-top: 16px; font-weight: 600; font-size: 0.9rem; }
+
+  /* Doctor preview cards */
+  .doc-card { text-align: center; }
+  .avatar {
+    width: 110px; height: 110px; border-radius: 50%; margin: 0 auto 18px; object-fit: cover;
+    border: 3px solid var(--primary); box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.35);
+  }
+  .doc-card .spec { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+  .doc-card .meta { font-size: 0.85rem; margin: 6px 0 16px; }
+
+  /* Testimonial carousel */
+  .carousel { position: relative; max-width: 780px; margin: 0 auto; overflow: hidden; }
+  .carousel-track { display: flex; transition: transform 0.6s cubic-bezier(.4,.1,.2,1); }
+  .slide { min-width: 100%; padding: 8px; }
+  .slide .card { text-align: center; padding: 40px 36px; }
+  .slide .quote { font-size: 1.1rem; font-style: italic; color: var(--text); margin-bottom: 22px; }
+  .slide .who { display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .slide .who img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+  .slide .who strong { display: block; color: var(--text); }
+  .slide .who small { color: var(--muted); }
+  .carousel-controls { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 26px; }
+  .dot {
+    width: 10px; height: 10px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--border); transition: all var(--transition);
+  }
+  .dot.active { background: var(--accent); width: 28px; border-radius: 6px; }
+  .carousel-btn {
+    width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); cursor: pointer; transition: all var(--transition);
+  }
+  .carousel-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* CTA band */
+  .cta-band {
+    text-align: center; padding: 60px 40px; border-radius: 22px;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.15), rgba(var(--accent-rgb), 0.15));
+    border: 1px solid var(--border);
+  }
+  .cta-band p { margin: 12px auto 28px; max-width: 560px; }
+
+  /* =====================================================================
+     7. ABOUT PAGE
+     ===================================================================== */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .about-img {
+    border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; height: 420px; object-fit: cover;
+    border: 1px solid var(--border);
+  }
+  .about-list { list-style: none; margin-top: 22px; display: grid; gap: 12px; }
+  .about-list li { display: flex; gap: 12px; color: var(--muted); }
+  .about-list li::before { content: "✓"; color: var(--primary); font-weight: 700; }
+  .value-card .icon-badge { margin-bottom: 14px; }
+  .timeline { position: relative; max-width: 700px; margin: 0 auto; padding-left: 30px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(var(--primary), var(--accent));
+  }
+  .timeline-item { position: relative; margin-bottom: 30px; }
+  .timeline-item::before {
+    content: ""; position: absolute; left: -28px; top: 6px; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 12px var(--accent);
+  }
+  .timeline-item .year { color: var(--primary); font-weight: 700; font-family: var(--font-head); }
+
+  /* =====================================================================
+     8. DOCTORS PAGE (filter chips + doctor grid)
+     ===================================================================== */
+  .filter-bar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 40px; }
+  .chip {
+    padding: 8px 18px; border-radius: 999px; border: 1px solid var(--border); background: var(--card);
+    color: var(--muted); cursor: pointer; font-size: 0.88rem; transition: all var(--transition);
+  }
+  .chip:hover { color: var(--primary); border-color: var(--primary); }
+  .chip.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0b0b1a; border-color: transparent; }
+  .doc-hospital { font-size: 0.82rem; color: var(--muted); margin-bottom: 14px; }
+  .doc-card .btn { margin-top: 4px; }
+  .empty-msg { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--muted); }
+
+  /* =====================================================================
+     9. BOOKING PAGE
+     ===================================================================== */
+  .booking-wrap { display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; align-items: start; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  label { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+  .field {
+    width: 100%; padding: 13px 16px; border-radius: var(--radius-sm); background: var(--bg);
+    border: 1px solid var(--border); color: var(--text); transition: border-color var(--transition), box-shadow var(--transition);
+  }
+  .field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.18); }
+  .field.invalid { border-color: var(--accent); }
+  textarea.field { resize: vertical; min-height: 110px; }
+  select.field option { background: var(--card); color: var(--text); }
+  .error-msg { color: var(--accent); font-size: 0.82rem; min-height: 1em; }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+  .slot {
+    padding: 10px 6px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+    background: var(--bg); cursor: pointer; font-size: 0.88rem; transition: all var(--transition);
+  }
+  .slot:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+  .slot.selected { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0b0b1a; border-color: transparent; }
+  .slot:disabled { opacity: 0.35; text-decoration: line-through; cursor: not-allowed; }
+  .summary-card h3 { margin-bottom: 18px; }
+  .summary-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--border); font-size: 0.92rem; }
+  .summary-row span:first-child { color: var(--muted); }
+  .summary-row span:last-child { color: var(--text); font-weight: 600; text-align: right; }
+  .alert {
+    margin-top: 20px; padding: 16px 18px; border-radius: var(--radius-sm); font-size: 0.92rem;
+    display: none;
+  }
+  .alert.show { display: block; animation: pageIn 0.4s ease; }
+  .alert-success { background: rgba(0, 255, 160, 0.1); border: 1px solid rgba(0, 255, 160, 0.4); color: var(--text); }
+  .alert-error { background: rgba(var(--accent-rgb), 0.1); border: 1px solid rgba(var(--accent-rgb), 0.4); color: var(--text); }
+
+  /* =====================================================================
+     10. HEALTH RECORDS PAGE
+     ===================================================================== */
+  .profile-card { display: flex; align-items: center; gap: 22px; }
+  .profile-card img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+  .profile-card .info-line { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+  .records-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 30px; align-items: start; }
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 560px; }
+  th, td { padding: 13px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: rgba(var(--primary-rgb), 0.08); color: var(--primary); font-weight: 600; font-family: var(--font-head); font-size: 0.85rem; }
+  td { color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  .pill {
+    display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+    background: rgba(var(--primary-rgb), 0.12); color: var(--primary);
+  }
+  .pill.cancelled { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); }
+  .link-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+  .link-btn:hover { text-decoration: underline; }
+  .records-section-title { margin: 40px 0 18px; font-size: 1.3rem; }
+  .empty-cell { text-align: center; padding: 26px; color: var(--muted); }
+
+  /* =====================================================================
+     11. PRICING PAGE
+     ===================================================================== */
+  .toggle-wrap { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 44px; font-weight: 500; }
+  .switch { position: relative; width: 56px; height: 30px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider {
+    position: absolute; inset: 0; border-radius: 999px; cursor: pointer;
+    background: var(--card); border: 1px solid var(--border); transition: background var(--transition);
+  }
+  .switch .slider::before {
+    content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; border-radius: 50%;
+    background: var(--primary); transition: transform var(--transition);
+  }
+  .switch input:checked + .slider::before { transform: translateX(26px); background: var(--accent); }
+  .save-badge { font-size: 0.78rem; color: #0b0b1a; background: var(--primary); padding: 3px 9px; border-radius: 999px; }
+  .price-card { position: relative; overflow: hidden; display: flex; flex-direction: column; }
+  .price-card.featured {
+    border-color: var(--accent); transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.25);
+  }
+  .price-card.featured:hover { transform: scale(1.03) translateY(-6px); }
+  .ribbon {
+    position: absolute; top: 16px; right: -34px; transform: rotate(40deg);
+    background: var(--accent); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 40px;
+  }
+  .plan-name { font-family: var(--font-head); font-size: 1.3rem; }
+  .price { font-family: var(--font-head); font-size: 2.8rem; font-weight: 700; margin: 16px 0 4px; color: var(--text); }
+  .price small { font-size: 1rem; color: var(--muted); font-weight: 500; }
+  .plan-desc { font-size: 0.9rem; margin-bottom: 22px; }
+  .features-list { list-style: none; margin: 0 0 28px; display: grid; gap: 12px; flex: 1; }
+  .features-list li { font-size: 0.92rem; color: var(--muted); display: flex; gap: 10px; }
+  .features-list li::before { content: "✓"; color: var(--primary); font-weight: 700; }
+  .features-list li.off { opacity: 0.45; }
+  .features-list li.off::before { content: "✕"; color: var(--muted); }
+  .faq { max-width: 760px; margin: 60px auto 0; display: grid; gap: 12px; }
+  .faq details { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px 22px; }
+  .faq summary { cursor: pointer; font-weight: 600; color: var(--text); list-style: none; }
+  .faq summary::after { content: "+"; float: right; color: var(--primary); font-size: 1.2rem; }
+  .faq details[open] summary::after { content: "−"; }
+  .faq details p { margin-top: 10px; font-size: 0.92rem; }
+
+  /* =====================================================================
+     12. GALLERY PAGE (lightbox)
+     ===================================================================== */
+  .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .gallery-item {
+    position: relative; border-radius: var(--radius); overflow: hidden; cursor: zoom-in;
+    aspect-ratio: 4 / 3; border: 1px solid var(--border); background: var(--card);
+  }
+  .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+  .gallery-item:hover img { transform: scale(1.08); }
+  .gallery-item .overlay {
+    position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 16px;
+    background: linear-gradient(transparent 40%, rgba(11,11,26,0.9));
+    opacity: 0; transition: opacity var(--transition);
+  }
+  .gallery-item:hover .overlay { opacity: 1; }
+  .gallery-item .overlay span { color: #fff; font-weight: 600; font-size: 0.95rem; }
+
+  .lightbox {
+    position: fixed; inset: 0; z-index: 2000; background: rgba(5,5,12,0.94);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: opacity var(--transition), visibility var(--transition);
+  }
+  .lightbox.open { opacity: 1; visibility: visible; }
+  .lightbox img {
+    max-width: 90vw; max-height: 80vh; border-radius: var(--radius); box-shadow: 0 0 40px rgba(var(--primary-rgb), 0.3);
+    transform: scale(0.95); transition: transform var(--transition);
+  }
+  .lightbox.open img { transform: scale(1); }
+  .lightbox-caption { position: absolute; bottom: 30px; left: 0; right: 0; text-align: center; color: #e8e8f2; font-size: 0.95rem; }
+  .lb-btn {
+    position: absolute; width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--primary);
+    background: rgba(11,11,26,0.6); color: var(--primary); font-size: 1.4rem; cursor: pointer;
+    transition: all var(--transition);
+  }
+  .lb-btn:hover { background: var(--primary); color: #0b0b1a; }
+  .lb-close { top: 24px; right: 24px; }
+  .lb-prev { left: 24px; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 24px; top: 50%; transform: translateY(-50%); }
+
+  /* =====================================================================
+     13. CONTACT PAGE (form + map + info)
+     ===================================================================== */
+  .contact-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 30px; align-items: start; }
+  .contact-info { display: grid; gap: 18px; }
+  .info-item { display: flex; gap: 16px; align-items: flex-start; }
+  .info-item .icon-badge { margin: 0; flex-shrink: 0; width: 46px; height: 46px; font-size: 1.2rem; }
+  .info-item strong { display: block; color: var(--text); }
+  .map-wrap { margin-top: 30px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); height: 320px; }
+  .map-wrap iframe { width: 100%; height: 100%; border: 0; filter: saturate(0.9) hue-rotate(160deg) brightness(0.9); }
+  [data-theme="light"] .map-wrap iframe { filter: none; }
+  .social-row { display: flex; gap: 12px; margin-top: 10px; }
+  .social-link {
+    width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+    border: 1px solid var(--border); color: var(--text); font-weight: 700; font-size: 0.95rem;
+    transition: all var(--transition);
+  }
+  .social-link:hover { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0b0b1a; transform: translateY(-3px); border-color: transparent; }
+
+  /* =====================================================================
+     14. FOOTER (multi-column)
+     ===================================================================== */
+  footer {
+    background: var(--card); border-top: 1px solid var(--border); padding: 70px 0 24px; margin-top: 40px;
+  }
+  .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.3fr; gap: 40px; }
+  .footer-col h4 { font-size: 1rem; margin-bottom: 18px; color: var(--text); }
+  .footer-col ul { list-style: none; display: grid; gap: 10px; }
+  .footer-col a { color: var(--muted); font-size: 0.92rem; }
+  .footer-col a:hover { color: var(--primary); padding-left: 4px; }
+  .footer-col p { font-size: 0.92rem; }
+  .footer-bottom {
+    margin-top: 50px; padding-top: 22px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 0.85rem; color: var(--muted);
+  }
+
+  /* =====================================================================
+     15. FLOATING ACTIONS (sticky CTA + back to top)
+     ===================================================================== */
+  .fab-cta {
+    position: fixed; right: 24px; bottom: 24px; z-index: 900;
+    padding: 14px 22px; border-radius: 999px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0b0b1a; font-weight: 700;
+    box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.4);
+    transform: translateY(120px); opacity: 0; transition: all 0.4s ease;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  .fab-cta.show { transform: translateY(0); opacity: 1; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.4); }
+    50% { box-shadow: 0 10px 40px rgba(var(--primary-rgb), 0.6); }
+  }
+  .back-to-top {
+    position: fixed; right: 28px; bottom: 96px; z-index: 900; width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid var(--primary); background: var(--card); color: var(--primary); font-size: 1.2rem; cursor: pointer;
+    opacity: 0; visibility: hidden; transform: translateY(20px); transition: all var(--transition);
+  }
+  .back-to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+  .back-to-top:hover { background: var(--primary); color: #0b0b1a; }
+
+  /* =====================================================================
+     16. SCROLL REVEAL ANIMATIONS (fade-in on scroll)
+     ===================================================================== */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; transition-delay: var(--d, 0s); }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal-left.visible { opacity: 1; transform: none; }
+  .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal-right.visible { opacity: 1; transform: none; }
+
+  /* Reduced motion preference: disable heavy animations */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    .reveal, .reveal-left, .reveal-right { opacity: 1; transform: none; }
+  }
+
+  /* =====================================================================
+     17. RESPONSIVE DESIGN
+     ===================================================================== */
+  @media (max-width: 1024px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 900px) {
+    :root { --section-pad: 70px; }
+    .hamburger { display: flex; }
+    .nav-links {
+      position: fixed; top: 74px; left: 0; right: 0; flex-direction: column; gap: 0;
+      background: var(--nav-bg); backdrop-filter: blur(14px); padding: 12px 24px 24px;
+      border-bottom: 1px solid var(--border); transform: translateY(-120%); opacity: 0;
+      visibility: hidden; transition: transform var(--transition), opacity var(--transition), visibility var(--transition);
+    }
+    .nav-links.open { transform: none; opacity: 1; visibility: visible; }
+    .nav-links a { display: block; padding: 14px 6px; font-size: 1rem; border-bottom: 1px solid var(--border); }
+    .nav-links a::after { display: none; }
+    .nav-actions .btn-sm { display: none; }
+    .grid-3, .about-grid, .booking-wrap, .records-layout, .contact-grid { grid-template-columns: 1fr; }
+    .about-img { height: 300px; }
+    .price-card.featured { transform: none; }
+    .price-card.featured:hover { transform: translateY(-6px); }
+    .hero { min-height: auto; padding-top: 130px; }
+    .stats { margin-top: 0; }
+  }
+
+  @media (max-width: 600px) {
+    :root { --section-pad: 56px; }
+    .container { padding: 0 18px; }
+    .grid-2, .grid-4, .form-row, .footer-grid, .gallery-grid { grid-template-columns: 1fr; }
+    .hero-actions .btn { width: 100%; }
+    .cta-band { padding: 40px 22px; }
+    .slide .card { padding: 30px 22px; }
+    .fab-cta { right: 16px; bottom: 16px; padding: 12px 18px; font-size: 0.9rem; }
+    .back-to-top { right: 20px; bottom: 84px; }
+    .lb-prev, .lb-next { top: auto; bottom: 80px; transform: none; }
+    .lightbox-caption { bottom: 150px; }
+    .profile-card { flex-direction: column; text-align: center; }
+    .page-hero { padding-top: 120px; }
+  }
+  </style>
+</head>
+
+<body>
+
+<!-- =====================================================================
+     PRELOADER: shown until the page has fully loaded (see JS below)
+     ===================================================================== -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="loader-ring"></div>
+  <p>HOSPICARE</p>
+</div>
+
+<!-- =====================================================================
+     NAVBAR: fixed at the top; links use data-page for SPA routing
+     ===================================================================== -->
+<header class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a href="#home" class="logo" data-page="home" aria-label="HospiCare home">Hospi<span>Care</span></a>
+
+    <nav aria-label="Main navigation">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" data-page="home">Home</a></li>
+        <li><a href="#about" data-page="about">About</a></li>
+        <li><a href="#doctors" data-page="doctors">Doctors</a></li>
+        <li><a href="#book" data-page="book">Book</a></li>
+        <li><a href="#records" data-page="records">Health Records</a></li>
+        <li><a href="#pricing" data-page="pricing">Pricing</a></li>
+        <li><a href="#gallery" data-page="gallery">Gallery</a></li>
+        <li><a href="#contact" data-page="contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <!-- Dark / Light mode toggle -->
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle dark and light mode" title="Toggle theme">☾</button>
+      <a href="#book" class="btn btn-primary btn-sm" data-page="book">Book Visit</a>
+      <!-- Hamburger button (visible on mobile) -->
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- =====================================================================
+     PAGE 1: HOME
+     ===================================================================== -->
+<section id="home" class="page active" aria-label="Home">
+
+  <!-- Hero with animated gradient background and parallax layer -->
+  <div class="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-grid-lines"></div>
+    <div class="container">
+      <div class="hero-content">
+        <span class="eyebrow reveal">Your health, organised</span>
+        <h1 class="reveal" style="--d:0.1s">Your health journey,<br><span>a place to live again.</span></h1>
+        <p class="lead reveal" style="--d:0.2s">
+          Keep every health record in one secure place and book appointments with trusted specialists
+          across our partner hospitals. Clear care, from the first visit to long-term wellbeing.
+        </p>
+        <div class="hero-actions reveal" style="--d:0.3s">
+          <a href="#book" class="btn btn-primary" data-page="book">Book an Appointment</a>
+          <a href="#records" class="btn btn-outline" data-page="records">View Health Records</a>
+        </div>
+        <div class="hero-tags reveal" style="--d:0.4s">
+          <span class="tag">🔒 Encrypted records</span>
+          <span class="tag">🏥 3 partner hospitals</span>
+          <span class="tag">👩‍⚕️ Verified specialists</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animated statistics counters -->
+  <div class="container stats">
+    <div class="grid grid-4">
+      <div class="card stat-card reveal">
+        <div class="stat-num"><span class="counter" data-target="25000">0</span><small>+</small></div>
+        <p>Patients cared for</p>
+      </div>
+      <div class="card stat-card reveal" style="--d:0.1s">
+        <div class="stat-num"><span class="counter" data-target="120">0</span><small>+</small></div>
+        <p>Specialist doctors</p>
+      </div>
+      <div class="card stat-card reveal" style="--d:0.2s">
+        <div class="stat-num"><span class="counter" data-target="3">0</span></div>
+        <p>Partner hospitals</p>
+      </div>
+      <div class="card stat-card reveal" style="--d:0.3s">
+        <div class="stat-num"><span class="counter" data-target="49" data-decimal="1">0</span><small>/10</small></div>
+        <p>Average patient rating</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Services: card-based grid -->
+  <div class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">What we offer</span>
+        <h2>Care that fits into your life</h2>
+        <p>From routine check-ups to specialist consultations, everything is connected in one place.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card service-card reveal">
+          <div class="icon-badge">📋</div>
+          <h3>Digital Health Records</h3>
+          <p>Store reports, vitals and medication history securely, and share them with any doctor you choose.</p>
+          <a href="#records" class="more" data-page="records">Open records →</a>
+        </div>
+        <div class="card service-card reveal" style="--d:0.1s">
+          <div class="icon-badge">📅</div>
+          <h3>Smart Appointment Booking</h3>
+          <p>Choose a hospital, pick your specialist and select a free slot. Confirmation arrives instantly.</p>
+          <a href="#book" class="more" data-page="book">Book now →</a>
+        </div>
+        <div class="card service-card reveal" style="--d:0.2s">
+          <div class="icon-badge">🧠</div>
+          <h3>Specialist Network</h3>
+          <p>Cardiology, neurology, paediatrics, orthopaedics and more, all within our partner hospitals.</p>
+          <a href="#doctors" class="more" data-page="doctors">Meet our doctors →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured doctors preview -->
+  <div class="section section-alt">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Featured specialists</span>
+        <h2>Meet a few of our doctors</h2>
+      </div>
+      <div class="grid grid-4" id="homeDoctors"></div>
+    </div>
+  </div>
+
+  <!-- Testimonials carousel -->
+  <div class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Patient stories</span>
+        <h2>Trusted by families every day</h2>
+      </div>
+      <div class="carousel reveal" id="carousel">
+        <div class="carousel-track" id="carouselTrack"></div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" id="prevSlide" aria-label="Previous testimonial">‹</button>
+        <div id="carouselDots" style="display:flex;gap:8px;"></div>
+        <button class="carousel-btn" id="nextSlide" aria-label="Next testimonial">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call-to-action band -->
+  <div class="section" style="padding-top: 0;">
+    <div class="container">
+      <div class="cta-band reveal">
+        <span class="eyebrow">Ready when you are</span>
+        <h2>Take the first step toward feeling well again</h2>
+        <p>Book a consultation in under two minutes. Our team will help you find the right specialist.</p>
+        <a href="#book" class="btn btn-primary" data-page="book">Book your appointment</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PAGE 2: ABOUT
+     ===================================================================== -->
+<section id="about" class="page" aria-label="About HospiCare">
+  <div class="page-hero">
+    <div class="container reveal">
+      <span class="eyebrow">About us</span>
+      <h1>Caring for you, every step of the way</h1>
+      <p>HospiCare was founded to make quality healthcare easier to access, understand and manage.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container about-grid">
+      <div class="reveal-left">
+        <img class="about-img" src="https://picsum.photos/seed/hospicare-about/900/700" alt="Doctor reviewing patient records in a bright clinic">
+      </div>
+      <div class="reveal-right">
+        <span class="eyebrow">Our mission</span>
+        <h2>Health records and specialist care, connected</h2>
+        <p style="margin-top:14px;">
+          Many patients struggle to keep track of reports, prescriptions and appointments across different hospitals.
+          HospiCare brings them together. One secure record follows you, and every specialist you book with can see
+          the information you choose to share.
+        </p>
+        <ul class="about-list">
+          <li>Personal health record with reports, vitals and history</li>
+          <li>Appointments with specialists across three partner hospitals</li>
+          <li>Clear pricing and transparent consultation fees</li>
+          <li>Data protected with industry-standard encryption</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-alt">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Our values</span>
+        <h2>What guides our care</h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card value-card reveal">
+          <div class="icon-badge">🤝</div>
+          <h3>Compassion</h3>
+          <p>Every patient deserves to be listened to. We design our services around real people and their concerns.</p>
+        </div>
+        <div class="card value-card reveal" style="--d:0.1s">
+          <div class="icon-badge">🔬</div>
+          <h3>Expertise</h3>
+          <p>We work only with licensed specialists who keep their skills current through continuous medical training.</p>
+        </div>
+        <div class="card value-card reveal" style="--d:0.2s">
+          <div class="icon-badge">🛡️</div>
+          <h3>Privacy</h3>
+          <p>Your health information belongs to you. You decide who can access it, and you can change that at any time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Our journey</span>
+        <h2>How HospiCare grew</h2>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item reveal"><div class="year">2019</div><p>HospiCare began with one clinic and a simple idea: a single record for every patient.</p></div>
+        <div class="timeline-item reveal"><div class="year">2021</div><p>Launched online appointment booking, reducing waiting times for specialist consultations.</p></div>
+        <div class="timeline-item reveal"><div class="year">2023</div><p>Partnered with three hospitals to offer cardiology, neurology and paediatric care under one account.</p></div>
+        <div class="timeline-item reveal"><div class="year">2026</div><p>Serving more than 25,000 patients with a secure, personal health record for every member.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PAGE 3: DOCTORS (filter by specialty)
+     ===================================================================== -->
+<section id="doctors" class="page" aria-label="Our doctors">
+  <div class="page-hero">
+    <div class="container reveal">
+      <span class="eyebrow">Our specialists</span>
+      <h1>Find the right doctor</h1>
+      <p>Browse specialists by field and hospital, then book directly from their profile.</p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 20px;">
+    <div class="container">
+      <div class="filter-bar reveal" id="specFilters" role="group" aria-label="Filter by specialty"></div>
+      <div class="grid grid-3" id="doctorGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PAGE 4: BOOK APPOINTMENT
+     ===================================================================== -->
+<section id="book" class="page" aria-label="Book an appointment">
+  <div class="page-hero">
+    <div class="container reveal">
+      <span class="eyebrow">Appointments</span>
+      <h1>Book your consultation</h1>
+      <p>Select a hospital, a specialist and a time. You will see confirmation immediately.</p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 20px;">
+    <div class="container booking-wrap">
+
+      <!-- Booking form with validation -->
+      <form class="card reveal-left" id="bookForm" novalidate>
+        <h3 style="margin-bottom:22px;">1. Choose your specialist</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookHospital">Hospital</label>
+            <select id="bookHospital" class="field"></select>
+            <div class="error-msg" id="errHospital"></div>
+          </div>
+          <div class="form-group">
+            <label for="bookDoctor">Doctor</label>
+            <select id="bookDoctor" class="field" disabled></select>
+            <div class="error-msg" id="errDoctor"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookDate">Preferred date</label>
+          <input type="date" id="bookDate" class="field">
+          <div class="error-msg" id="errDate"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Available time slots</label>
+          <div class="slots" id="slotGrid">
+            <p style="grid-column:1/-1;font-size:0.9rem;">Select a doctor and date to see available times.</p>
+          </div>
+          <div class="error-msg" id="errSlot"></div>
+        </div>
+
+        <h3 style="margin:30px 0 22px;">2. Your details</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="patientName">Full name</label>
+            <input type="text" id="patientName" class="field" placeholder="e.g. Aisha Khan" autocomplete="name">
+            <div class="error-msg" id="errName"></div>
+          </div>
+          <div class="form-group">
+            <label for="patientEmail">Email</label>
+            <input type="email" id="patientEmail" class="field" placeholder="you@example.com" autocomplete="email">
+            <div class="error-msg" id="errEmail"></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="patientPhone">Phone</label>
+            <input type="tel" id="patientPhone" class="field" placeholder="+1 555 123 4567" autocomplete="tel">
+            <div class="error-msg" id="errPhone"></div>
+          </div>
+          <div class="form-group">
+            <label for="patientReason">Reason for visit</label>
+            <select id="patientReason" class="field">
+              <option value="">Select a reason</option>
+              <option>New consultation</option>
+              <option>Follow-up visit</option>
+              <option>Test results review</option>
+              <option>Routine check-up</option>
+              <option>Urgent concern (non-emergency)</option>
+            </select>
+            <div class="error-msg" id="errReason"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="patientNotes">Additional notes (optional)</label>
+          <textarea id="patientNotes" class="field" placeholder="Share symptoms or anything the doctor should know beforehand"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Confirm Appointment</button>
+        <div class="alert" id="bookAlert" role="status"></div>
+      </form>
+
+      <!-- Live booking summary -->
+      <aside class="card summary-card reveal-right">
+        <h3>Booking summary</h3>
+        <div class="summary-row"><span>Hospital</span><span id="sumHospital">Not selected</span></div>
+        <div class="summary-row"><span>Doctor</span><span id="sumDoctor">Not selected</span></div>
+        <div class="summary-row"><span>Specialty</span><span id="sumSpecialty">-</span></div>
+        <div class="summary-row"><span>Date</span><span id="sumDate">-</span></div>
+        <div class="summary-row"><span>Time</span><span id="sumTime">-</span></div>
+        <div class="summary-row"><span>Consultation fee</span><span id="sumFee">-</span></div>
+        <p style="font-size:0.85rem;margin-top:18px;">
+          Please arrive 10 minutes early and bring any recent reports. You can reschedule or cancel from your
+          Health Records page.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PAGE 5: HEALTH RECORDS (profile, vitals, appointments)
+     ===================================================================== -->
+<section id="records" class="page" aria-label="Health records">
+  <div class="page-hero">
+    <div class="container reveal">
+      <span class="eyebrow">Your health record</span>
+      <h1>Everything about your health, in one place</h1>
+      <p>Review upcoming appointments, log vitals and keep your history up to date.</p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 20px;">
+    <div class="container">
+
+      <!-- Patient profile card -->
+      <div class="card profile-card reveal">
+        <img src="https://picsum.photos/seed/hospicare-patient/200/200" alt="Patient profile photo">
+        <div>
+          <h3>Aisha Khan</h3>
+          <div class="info-line">Date of birth: 14 March 1988 &nbsp;·&nbsp; Blood group: O+</div>
+          <div class="info-line">Known allergies: Penicillin &nbsp;·&nbsp; Primary physician: Dr. Liam O'Brien</div>
+        </div>
+      </div>
+
+      <!-- Appointments list -->
+      <h2 class="records-section-title reveal">Your appointments</h2>
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>Doctor</th><th>Hospital</th><th>Date</th><th>Time</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody id="apptBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Vitals log form + table -->
+      <div class="records-layout" style="margin-top:50px;">
+        <form class="card reveal-left" id="vitalsForm" novalidate>
+          <h3 style="margin-bottom:20px;">Log a new reading</h3>
+          <div class="form-group">
+            <label for="vDate">Date</label>
+            <input type="date" id="vDate" class="field">
+            <div class="error-msg" id="errVDate"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="vSys">Systolic BP (mmHg)</label>
+              <input type="number" id="vSys" class="field" placeholder="120">
+            </div>
+            <div class="form-group">
+              <label for="vDia">Diastolic BP (mmHg)</label>
+              <input type="number" id="vDia" class="field" placeholder="80">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="vHr">Heart rate (bpm)</label>
+              <input type="number" id="vHr" class="field" placeholder="72">
+            </div>
+            <div class="form-group">
+              <label for="vWeight">Weight (kg)</label>
+              <input type="number" id="vWeight" class="field" placeholder="62" step="0.1">
+            </div>
+          </div>
+          <div class="error-msg" id="errVitals" style="margin-bottom:12px;"></div>
+          <button type="submit" class="btn btn-primary btn-block">Save reading</button>
+        </form>
+
+        <div class="table-wrap reveal-right">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>BP</th><th>Heart rate</th><th>Weight</th></tr>
+            </thead>
+            <tbody id="vitalsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PAGE 6: PRICING (monthly/yearly toggle + plan cards + FAQ)
+     ===================================================================== -->
+<section id="pricing" class="page" aria-label="Pricing">
+  <div class="page-hero">
+    <div class="container reveal">
+      <span class="eyebrow">Plans & pricing</span>
+      <h1>Simple plans for every stage of care</h1>
+      <p>Choose the level of support that suits you. Upgrade or downgrade at any time.</p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 20px;">
+    <div class="container">
+      <!-- Billing toggle -->
+      <div class="toggle-wrap reveal">
+        <span>Monthly</span>
+        <label class="switch" aria-label="Switch between monthly and yearly billing">
+          <input type="checkbox" id="billingToggle">
+          <span class="slider"></span>
+        </label>
+        <span>Yearly <span class="save-badge">Save 20%</span></span>
+      </div>
+
+      <div class="grid grid-3" id="pricingGrid">
+        <div class="card price-card reveal">
+          <div class="plan-name">Essential</div>
+          <div class="plan-desc">Basic record keeping and booking for individuals.</div>
+          <div class="price" data-monthly="0" data-yearly="0">$0 <small>/ month</small></div>
+          <ul class="features-list">
+            <li>Personal health record</li>
+            <li>Book up to 2 appointments / month</li>
+            <li>Vitals logging</li>
+            <li class="off">Priority specialist access</li>
+            <li class="off">Family profiles</li>
+          </ul>
+          <a href="#book" class="btn btn-outline btn-block" data-page="book">Get started</a>
+        </div>
+
+        <div class="card price-card featured reveal" style="--d:0.1s">
+          <div class="ribbon">MOST POPULAR</div>
+          <div class="plan-name">Premium</div>
+          <div class="plan-desc">Priority access and complete care coordination for busy lives.</div>
+          <div class="price" data-monthly="29" data-yearly="23">$29 <small>/ month</small></div>
+          <ul class="features-list">
+            <li>Everything in Essential</li>
+            <li>Unlimited appointments</li>
+            <li>Priority specialist access</li>
+            <li>Share records with any doctor</li>
+            <li class="off">Family profiles</li>
+          </ul>
+          <a href="#book" class="btn btn-primary btn-block" data-page="book">Choose Premium</a>
+        </div>
+
+        <div class="card price-card reveal" style="--d:0.2s">
+          <div class="plan-name">Family</div>
+          <div class="plan-desc">Manage health records for up to six family members.</div>
+          <div class="price" data-monthly="59" data-yearly="47">$59 <small>/ month</small></div>
+          <ul class="features-list">
+            <li>Everything in Premium</li>
+            <li>Up to 6 family profiles</li>
+            <li>Paediatric priority booking</li>
+            <li>Dedicated care coordinator</li>
+            <li>Emergency record access</li>
+          </ul>
+          <a href="#contact" class="btn btn-outline btn-block" data-page="contact">Talk to sales</a>
+        </div>
+      </div>
+
+      <!-- FAQ accordion (native details/summary) -->
+      <div class="faq reveal">
+        <h2 style="text-align:center;margin-bottom:10px;font-size:1.8rem;">Frequently asked questions</h2>
+        <details>
+          <summary>Can I change my plan later?</summary>
+          <p>Yes. You can upgrade or downgrade at any time, and the change applies from your next billing date.</p>
+        </details>
+        <details>
+          <summary>Are my health records secure?</summary>
+          <p>All records are encrypted in transit and at rest. Only you and the doctors you authorise can view them.</p>
+        </details>
+        <details>
+          <summary>Do plans cover consultation fees?</summary>
+          <p>Plans cover booking and record access. Individual consultation fees are shown on each doctor's profile.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PAGE 7: GALLERY (lightbox)
+     ===================================================================== -->
+<section id="gallery" class="page" aria-label="Gallery">
+  <div class="page-hero">
+    <div class="container reveal">
+      <span class="eyebrow">Inside HospiCare</span>
+      <h1>A look at our facilities</h1>
+      <p>Take a tour of the clinics and care spaces at our partner hospitals. Click any photo to enlarge it.</p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 20px;">
+    <div class="container">
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     PAGE 8: CONTACT (validated form + Google Map + social links)
+     ===================================================================== -->
+<section id="contact" class="page" aria-label="Contact us">
+  <div class="page-hero">
+    <div class="container reveal">
+      <span class="eyebrow">Get in touch</span>
+      <h1>We're here to help</h1>
+      <p>Questions about your account, a referral or a booking? Send us a message and we will reply within one working day.</p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 20px;">
+    <div class="container contact-grid">
+      <form class="card reveal-left" id="contactForm" novalidate>
+        <h3 style="margin-bottom:22px;">Send us a message</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cName">Name</label>
+            <input type="text" id="cName" class="field" placeholder="Your full name">
+            <div class="error-msg" id="errCName"></div>
+          </div>
+          <div class="form-group">
+            <label for="cEmail">Email</label>
+            <input type="email" id="cEmail" class="field" placeholder="you@example.com">
+            <div class="error-msg" id="errCEmail"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cSubject">Subject</label>
+          <select id="cSubject" class="field">
+            <option value="">Choose a topic</option>
+            <option>Account and records</option>
+            <option>Appointment help</option>
+            <option>Billing question</option>
+            <option>Partnership enquiry</option>
+          </select>
+          <div class="error-msg" id="errCSubject"></div>
+        </div>
+        <div class="form-group">
+          <label for="cMessage">Message</label>
+          <textarea id="cMessage" class="field" placeholder="How can we help you today?"></textarea>
+          <div class="error-msg" id="errCMessage"></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+        <div class="alert" id="contactAlert" role="status"></div>
+      </form>
+
+      <div class="reveal-right">
+        <div class="contact-info">
+          <div class="info-item">
+            <div class="icon-badge">📍</div>
+            <div><strong>Head office</strong><p>12 Harbor Road, Downtown Medical District</p></div>
+          </div>
+          <div class="info-item">
+            <div class="icon-badge">📞</div>
+            <div><strong>Phone</strong><p>+1 (555) 014-2290 · Mon to Sat, 8am to 8pm</p></div>
+          </div>
+          <div class="info-item">
+            <div class="icon-badge">✉️</div>
+            <div><strong>Email</strong><p>care@hospicare.example</p></div>
+          </div>
+          <div class="info-item">
+            <div class="icon-badge">🚑</div>
+            <div><strong>Emergencies</strong><p>If this is an emergency, call your local emergency number immediately.</p></div>
+          </div>
+        </div>
+
+        <div class="social-row" aria-label="Social media links">
+          <a class="social-link" href="#" aria-label="Facebook" title="Facebook">f</a>
+          <a class="social-link" href="#" aria-label="X (Twitter)" title="X">X</a>
+          <a class="social-link" href="#" aria-label="Instagram" title="Instagram">ig</a>
+          <a class="social-link" href="#" aria-label="LinkedIn" title="LinkedIn">in</a>
+          <a class="social-link" href="#" aria-label="YouTube" title="YouTube">▶</a>
+        </div>
+
+        <!-- Google Maps embed (no API key needed for basic embed) -->
+        <div class="map-wrap">
+          <iframe
+            title="HospiCare head office location on Google Maps"
+            src="https://www.google.com/maps?q=Downtown+Medical+District&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- =====================================================================
+     FOOTER: multi-column (links, about, contact, social)
+     ===================================================================== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a href="#home" class="logo" data-page="home" style="margin-bottom:14px;display:inline-flex;">Hospi<span>Care</span></a>
+        <p>A place to live again. Secure health records and specialist appointments, all in one trusted platform.</p>
+        <div class="social-row">
+          <a class="social-link" href="#" aria-label="Facebook">f</a>
+          <a class="social-link" href="#" aria-label="X (Twitter)">X</a>
+          <a class="social-link" href="#" aria-label="Instagram">ig</a>
+          <a class="social-link" href="#" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick links</h4>
+        <ul>
+          <li><a href="#home" data-page="home">Home</a></li>
+          <li><a href="#about" data-page="about">About us</a></li>
+          <li><a href="#doctors" data-page="doctors">Find a doctor</a></li>
+          <li><a href="#pricing" data-page="pricing">Pricing</a></li>
+          <li><a href="#gallery" data-page="gallery">Gallery</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#book" data-page="book">Book appointment</a></li>
+          <li><a href="#records" data-page="records">Health records</a></li>
+          <li><a href="#doctors" data-page="doctors">Specialists</a></li>
+          <li><a href="#contact" data-page="contact">Support</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#contact" data-page="contact">12 Harbor Road, Downtown</a></li>
+          <li><a href="#contact" data-page="contact">+1 (555) 014-2290</a></li>
+          <li><a href="#contact" data-page="contact">care@hospicare.example</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; 2026 HospiCare. All rights reserved.</span>
+      <span>Privacy Policy &nbsp;·&nbsp; Terms of Use &nbsp;·&nbsp; Accessibility</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Sticky call-to-action button -->
+<button class="fab-cta" id="stickyCta" data-page="book">Book Appointment</button>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Image lightbox (used by the gallery page) -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lb-btn lb-close" id="lbClose" aria-label="Close">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous image">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Next image">›</button>
+  <div class="lightbox-caption" id="lbCaption"></div>
+</div>
+
+<script>
+/* =====================================================================
+   JAVASCRIPT
+   Organised into sections: data, routing, UI, rendering, forms, effects.
+   All data lives in memory for this demo; swap with API calls in production.
+   ===================================================================== */
+
+/* ---------- 1. DATA ---------- */
+
+// Partner hospitals
+const HOSPITALS = [
+  { id: "cch", name: "City Central Hospital", address: "12 Harbor Road, Downtown" },
+  { id: "rmc", name: "Riverside Medical Center", address: "88 Riverside Drive" },
+  { id: "gsc", name: "Greenfield Specialty Clinic", address: "5 Greenfield Park Lane" }
+];
+
+// Doctors, each linked to a hospital and a specialty
+const DOCTORS = [
+  { id: "d1", name: "Dr. Ananya Mehta", specialty: "Cardiology", hospitalId: "cch", years: 14, rating: 4.9, fee: 120, img: "https://picsum.photos/seed/doc-ananya/400/400" },
+  { id: "d2", name: "Dr. Daniel Okafor", specialty: "Neurology", hospitalId: "cch", years: 11, rating: 4.8, fee: 140, img: "https://picsum.photos/seed/doc-daniel/400/400" },
+  { id: "d3", name: "Dr. Sofia Lindqvist", specialty: "Paediatrics", hospitalId: "rmc", years: 9, rating: 4.9, fee: 95, img: "https://picsum.photos/seed/doc-sofia/400/400" },
+  { id: "d4", name: "Dr. Marcus Chen", specialty: "Orthopaedics", hospitalId: "rmc", years: 16, rating: 4.7, fee: 130, img: "https://picsum.photos/seed/doc-marcus/400/400" },
+  { id: "d5", name: "Dr. Priya Raman", specialty: "Dermatology", hospitalId: "gsc", years: 8, rating: 4.8, fee: 90, img: "https://picsum.photos/seed/doc-priya/400/400" },
+  { id: "d6", name: "Dr. Liam O'Brien", specialty: "General Medicine", hospitalId: "gsc", years: 12, rating: 4.9, fee: 80, img: "https://picsum.photos/seed/doc-liam/400/400" },
+  { id: "d7", name: "Dr. Hannah Weiss", specialty: "Gynaecology", hospitalId: "rmc", years: 13, rating: 4.8, fee: 110, img: "https://picsum.photos/seed/doc-hannah/400/400" }
+];
+
+// Available appointment times for each day
+const TIME_SLOTS = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"];
+
+// Patient testimonials
+const TESTIMONIALS = [
+  { quote: "HospiCare kept my blood pressure logs and cardiology reports in one place. My specialist could see my history before I even walked in.", name: "Rohan S.", role: "Patient, Cardiology", img: "https://picsum.photos/seed/t1/120/120" },
+  { quote: "Booking my daughter's paediatric visit took two minutes. The reminders and clear time slots made a stressful week much easier.", name: "Maria L.", role: "Parent of a patient", img: "https://picsum.photos/seed/t2/120/120" },
+  { quote: "After a long recovery from knee surgery, the follow-up scheduling and records helped me feel in control again.", name: "James T.", role: "Patient, Orthopaedics", img: "https://picsum.photos/seed/t3/120/120" }
+];
+
+// Gallery images (picsum placeholders)
+const GALLERY = [
+  { src: "https://picsum.photos/seed/gal1/1200/900", thumb: "https://picsum.photos/seed/gal1/600/450", caption: "Main reception at City Central Hospital" },
+  { src: "https://picsum.photos/seed/gal2/1200/900", thumb: "https://picsum.photos/seed/gal2/600/450", caption: "Paediatric wing at Riverside Medical Center" },
+  { src: "https://picsum.photos/seed/gal3/1200/900", thumb: "https://picsum.photos/seed/gal3/600/450", caption: "Cardiology diagnostics suite" },
+  { src: "https://picsum.photos/seed/gal4/1200/900", thumb: "https://picsum.photos/seed/gal4/600/450", caption: "Patient consultation room" },
+  { src: "https://picsum.photos/seed/gal5/1200/900", thumb: "https://picsum.photos/seed/gal5/600/450", caption: "Greenfield Specialty Clinic waiting garden" },
+  { src: "https://picsum.photos/seed/gal6/1200/900", thumb: "https://picsum.photos/seed/gal6/600/450", caption: "Rehabilitation and physiotherapy studio" }
+];
+
+// Appointments booked during this session (in memory). A sample is seeded for demonstration.
+const appointments = [
+  { id: 1001, doctorId: "d6", date: getDateOffset(3), time: "10:00", patient: "Aisha Khan", reason: "Routine check-up", status: "Confirmed" }
+];
+
+// Health vitals log (sample readings)
+const vitals = [
+  { date: getDateOffset(-14), sys: 122, dia: 80, hr: 74, weight: 63.2 },
+  { date: getDateOffset(-7), sys: 118, dia: 78, hr: 70, weight: 62.8 }
+];
+
+/* ---------- 2. HELPERS ---------- */
+
+// Returns an ISO date (YYYY-MM-DD) offset from today by a number of days (uses local time, not UTC)
+function getDateOffset(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+// Looks up a hospital or doctor by id
+const findHospital = id => HOSPITALS.find(h => h.id === id);
+const findDoctor = id => DOCTORS.find(d => d.id === id);
+
+// Formats YYYY-MM-DD as a readable date like "Mon, 18 Nov 2026"
+function formatDate(iso) {
+  if (!iso) return "-";
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+}
+
+// Escapes text before inserting into HTML, protecting against injection
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// Shows a message in an alert element for a given duration
+function flashAlert(el, type, message, duration = 5000) {
+  el.className = `alert alert-${type} show`;
+  el.textContent = message;
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove("show"), duration);
+}
+
+// Simple email and phone format checks
+const isValidEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+const isValidPhone = v => /^\+?[0-9\s\-()]{7,20}$/.test(v);
+
+/* ---------- 3. PRELOADER ---------- */
+
+// Hides the preloader once the page is fully loaded (with a safety timeout)
+(function initPreloader() {
+  const loader = document.getElementById("preloader");
+  const hide = () => loader.classList.add("hide");
+  window.addEventListener("load", () => setTimeout(hide, 500));
+  setTimeout(hide, 3000); // fallback in case load takes too long
+})();
+
+/* ---------- 4. SPA ROUTING (hash-based pages) ---------- */
+
+const pages = document.querySelectorAll(".page");
+const navLinks = document.querySelectorAll(".nav-links a");
+const navList = document.getElementById("navLinks");
+const hamburger = document.getElementById("hamburger");
+const stickyCta = document.getElementById("stickyCta");
+
+const PAGE_TITLES = {
+  home: "Home", about: "About", doctors: "Doctors", book: "Book Appointment",
+  records: "Health Records", pricing: "Pricing", gallery: "Gallery", contact: "Contact"
+};
+
+// Shows the requested page and hides the others
+function showPage(pageId) {
+  const target = PAGE_TITLES[pageId] ? pageId : "home";
+
+  pages.forEach(p => p.classList.toggle("active", p.id === target));
+  navLinks.forEach(a => a.classList.toggle("active", a.dataset.page === target));
+  document.title = `${PAGE_TITLES[target]} | HospiCare`;
+
+  // Reset scroll to top for the new page, then re-run reveal animations
+  window.scrollTo({ top: 0, behavior: "auto" });
+  requestAnimationFrame(() => observeReveals());
+
+  closeMenu();
+  updateStickyCta();
+}
+
+// Reads the hash in the URL and shows the matching page
+function handleRoute() {
+  const id = location.hash.replace("#", "") || "home";
+  showPage(id);
+}
+
+window.addEventListener("hashchange", handleRoute);
+
+// Clicking a data-page link that already points at the current hash would not
+// fire hashchange, so we refresh the view manually in that case.
+document.addEventListener("click", e => {
+  const link = e.target.closest("[data-page]");
+  if (!link) return;
+  if (location.hash === `#${link.dataset.page}`) {
+    e.preventDefault();
+    showPage(link.dataset.page);
+  }
+});
+
+/* ---------- 5. MOBILE MENU (hamburger) ---------- */
+
+function openMenu() {
+  navList.classList.add("open");
+  hamburger.classList.add("open");
+  hamburger.setAttribute("aria-expanded", "true");
+  hamburger.setAttribute("aria-label", "Close menu");
+}
+
+function closeMenu() {
+  navList.classList.remove("open");
+  hamburger.classList.remove("open");
+  hamburger.setAttribute("aria-expanded", "false");
+  hamburger.setAttribute("aria-label", "Open menu");
+}
+
+hamburger.addEventListener("click", () => {
+  navList.classList.contains("open") ? closeMenu() : openMenu();
+});
+
+/* ---------- 6. DARK / LIGHT THEME TOGGLE ---------- */
+
+const themeBtn = document.getElementById("themeToggle");
+
+// Applies a theme by setting data-theme on the root element
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  themeBtn.textContent = theme === "dark" ? "☾" : "☀";
+}
+
+// Load saved preference (if available), defaulting to dark
+let savedTheme = "dark";
+try { savedTheme = localStorage.getItem("hospicare-theme") || "dark"; } catch (err) { /* storage blocked */ }
+applyTheme(savedTheme);
+
+themeBtn.addEventListener("click", () => {
+  const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  applyTheme(next);
+  try { localStorage.setItem("hospicare-theme", next); } catch (err) { /* ignore */ }
+});
+
+/* ---------- 7. NAVBAR SHADOW + PARALLAX + BACK-TO-TOP + STICKY CTA ---------- */
+
+const navbar = document.getElementById("navbar");
+const heroBg = document.getElementById("heroBg");
+const backToTop = document.getElementById("backToTop");
+
+// Shows or hides the sticky booking button (hidden on the booking page itself)
+function updateStickyCta() {
+  const onBookPage = document.getElementById("book").classList.contains("active");
+  const scrolled = window.scrollY > 350;
+  stickyCta.classList.toggle("show", scrolled && !onBookPage);
+}
+
+// Single scroll handler, throttled with requestAnimationFrame for performance
+let ticking = false;
+window.addEventListener("scroll", () => {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    const y = window.scrollY;
+
+    navbar.classList.toggle("scrolled", y > 10);          // navbar shadow on scroll
+    backToTop.classList.toggle("show", y > 400);           // back-to-top visibility
+    updateStickyCta();                                      // sticky CTA visibility
+
+    // Parallax: the hero background moves slower than the page scroll
+    if (heroBg && document.getElementById("home").classList.contains("active")) {
+      heroBg.style.transform = `translateY(${y * 0.35}px)`;
+    }
+    ticking = false;
+  });
+}, { passive: true });
+
+backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+/* ---------- 8. SCROLL-TRIGGERED FADE-IN ANIMATIONS ---------- */
+
+// IntersectionObserver adds .visible when an element enters the viewport
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      revealObserver.unobserve(entry.target); // animate only once
+    }
+  });
+}, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+// Observes all reveal elements on the currently visible page
+function observeReveals() {
+  document.querySelectorAll(".page.active .reveal, .page.active .reveal-left, .page.active .reveal-right")
+    .forEach(el => { if (!el.classList.contains("visible")) revealObserver.observe(el); });
+}
+
+/* ---------- 9. ANIMATED STATISTICS COUNTERS ---------- */
+
+// Animates a number from 0 to its target when the element first appears
+function animateCounter(el) {
+  const target = parseFloat(el.dataset.target);
+  const decimals = parseInt(el.dataset.decimal || "0", 10);
+  const duration = 1800;
+  const start = performance.now();
+
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const value = target * eased;
+    el.textContent = decimals ? (value / 10).toFixed(decimals) : Math.floor(value).toLocaleString();
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = decimals ? (target / 10).toFixed(decimals) : target.toLocaleString();
+  }
+  requestAnimationFrame(step);
+}
+
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter(entry.target);
+      counterObserver.unobserve(entry.target); // count once
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll(".counter").forEach(el => counterObserver.observe(el));
+
+/* ---------- 10. TESTIMONIAL CAROUSEL ---------- */
+
+const track = document.getElementById("carouselTrack");
+const dotsWrap = document.getElementById("carouselDots");
+let slideIndex = 0;
+let slideTimer;
+
+// Builds slides and navigation dots from the testimonial data
+function buildCarousel() {
+  track.innerHTML = TESTIMONIALS.map(t => `
+    <div class="slide">
+      <div class="card">
+        <p class="quote">"${escapeHtml(t.quote)}"</p>
+        <div class="who">
+          <img src="${t.img}" alt="${escapeHtml(t.name)}">
+          <div><strong>${escapeHtml(t.name)}</strong><small>${escapeHtml(t.role)}</small></div>
+        </div>
+      </div>
+    </div>`).join("");
+
+  dotsWrap.innerHTML = TESTIMONIALS.map((_, i) =>
+    `<button class="dot" data-index="${i}" aria-label="Go to testimonial ${i + 1}"></button>`).join("");
+}
+
+// Moves the track to the given slide index and updates dots
+function goToSlide(index) {
+  slideIndex = (index + TESTIMONIALS.length) % TESTIMONIALS.length;
+  track.style.transform = `translateX(-${slideIndex * 100}%)`;
+  dotsWrap.querySelectorAll(".dot").forEach((d, i) => d.classList.toggle("active", i === slideIndex));
+}
+
+// Automatically advances the carousel every 6 seconds
+function startAutoplay() {
+  clearInterval(slideTimer);
+  slideTimer = setInterval(() => goToSlide(slideIndex + 1), 6000);
+}
+
+document.getElementById("prevSlide").addEventListener("click", () => { goToSlide(slideIndex - 1); startAutoplay(); });
+document.getElementById("nextSlide").addEventListener("click", () => { goToSlide(slideIndex + 1); startAutoplay(); });
+dotsWrap.addEventListener("click", e => {
+  const dot = e.target.closest(".dot");
+  if (dot) { goToSlide(Number(dot.dataset.index)); startAutoplay(); }
+});
+
+// Pause autoplay while the user hovers over the carousel
+document.getElementById("carousel").addEventListener("mouseenter", () => clearInterval(slideTimer));
+document.getElementById("carousel").addEventListener("mouseleave", startAutoplay);
+
+// Swipe support for touch devices
+let touchStartX = 0;
+track.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+track.addEventListener("touchend", e => {
+  const diff = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(diff) > 50) { goToSlide(slideIndex + (diff < 0 ? 1 : -1)); startAutoplay(); }
+});
+
+/* ---------- 11. RENDER DOCTOR CARDS (home preview and doctors page) ---------- */
+
+function doctorCardHtml(d) {
+  const hospital = findHospital(d.hospitalId);
+  const firstName = d.name.split(" ")[1];
+  return `
+    <div class="card doc-card reveal">
+      <img class="avatar" src="${d.img}" alt="Portrait of ${escapeHtml(d.name)}">
+      <h3>${escapeHtml(d.name)}</h3>
+      <div class="spec">${escapeHtml(d.specialty)}</div>
+      <div class="meta">${d.years} years experience · ⭐ ${d.rating} · $${d.fee}</div>
+      <div class="doc-hospital">${escapeHtml(hospital.name)}</div>
+      <a href="#book" class="btn btn-outline btn-sm" data-page="book" data-doctor="${d.id}">Book with ${escapeHtml(firstName)}</a>
+    </div>`;
+}
+
+// Home page shows the first four doctors
+function renderHomeDoctors() {
+  document.getElementById("homeDoctors").innerHTML = DOCTORS.slice(0, 4).map(doctorCardHtml).join("");
+}
+
+// Doctors page: filter chips + grid
+let activeSpecialty = "All";
+
+function renderSpecialtyFilters() {
+  const specs = ["All", ...new Set(DOCTORS.map(d => d.specialty))];
+  document.getElementById("specFilters").innerHTML = specs.map(s =>
+    `<button class="chip ${s === activeSpecialty ? "active" : ""}" data-spec="${escapeHtml(s)}">${escapeHtml(s)}</button>`
+  ).join("");
+}
+
+function renderDoctorGrid() {
+  const list = activeSpecialty === "All" ? DOCTORS : DOCTORS.filter(d => d.specialty === activeSpecialty);
+  const grid = document.getElementById("doctorGrid");
+  grid.innerHTML = list.length
+    ? list.map(doctorCardHtml).join("")
+    : `<div class="empty-msg">No doctors found for this specialty yet.</div>`;
+  observeReveals();
+}
+
+document.getElementById("specFilters").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  activeSpecialty = chip.dataset.spec;
+  renderSpecialtyFilters();
+  renderDoctorGrid();
+});
+
+// "Book with [doctor]" buttons pre-select that doctor on the booking form
+document.addEventListener("click", e => {
+  const btn = e.target.closest("[data-doctor]");
+  if (!btn) return;
+  const doc = findDoctor(btn.dataset.doctor);
+  if (!doc) return;
+  setTimeout(() => {
+    bookHospital.value = doc.hospitalId;
+    populateDoctors();
+    bookDoctor.value = doc.id;
+    onBookingChange();
+  }, 50);
+});
+
+/* ---------- 12. BOOKING FORM ---------- */
+
+const bookHospital = document.getElementById("bookHospital");
+const bookDoctor = document.getElementById("bookDoctor");
+const bookDate = document.getElementById("bookDate");
+const slotGrid = document.getElementById("slotGrid");
+let selectedTime = null;
+
+// Fills the hospital dropdown
+function populateHospitals() {
+  bookHospital.innerHTML = `<option value="">Select a hospital</option>` +
+    HOSPITALS.map(h => `<option value="${h.id}">${escapeHtml(h.name)}</option>`).join("");
+}
+
+// Fills the doctor dropdown based on the chosen hospital
+function populateDoctors() {
+  const hId = bookHospital.value;
+  if (!hId) {
+    bookDoctor.innerHTML = `<option value="">Select a hospital first</option>`;
+    bookDoctor.disabled = true;
+    return;
+  }
+  const list = DOCTORS.filter(d => d.hospitalId === hId);
+  bookDoctor.innerHTML = `<option value="">Select a doctor</option>` +
+    list.map(d => `<option value="${d.id}">${escapeHtml(d.name)} · ${escapeHtml(d.specialty)}</option>`).join("");
+  bookDoctor.disabled = false;
+}
+
+// Checks whether a slot is already taken for a doctor on a given date
+function isSlotBooked(doctorId, date, time) {
+  return appointments.some(a => a.doctorId === doctorId && a.date === date && a.time === time && a.status !== "Cancelled");
+}
+
+// Renders time slots for the selected doctor and date, disabling booked ones
+function renderSlots() {
+  const doctorId = bookDoctor.value;
+  const date = bookDate.value;
+  if (!doctorId || !date) {
+    slotGrid.innerHTML = `<p style="grid-column:1/-1;font-size:0.9rem;">Select a doctor and date to see available times.</p>`;
+    return;
+  }
+  slotGrid.innerHTML = TIME_SLOTS.map(t => {
+    const booked = isSlotBooked(doctorId, date, t);
+    const sel = selectedTime === t && !booked ? "selected" : "";
+    return `<button type="button" class="slot ${sel}" data-time="${t}" ${booked ? "disabled" : ""}>${t}</button>`;
+  }).join("");
+}
+
+// Updates the live summary panel with the current selections
+function updateSummary() {
+  const hospital = findHospital(bookHospital.value);
+  const doctor = findDoctor(bookDoctor.value);
+  document.getElementById("sumHospital").textContent = hospital ? hospital.name : "Not selected";
+  document.getElementById("sumDoctor").textContent = doctor ? doctor.name : "Not selected";
+  document.getElementById("sumSpecialty").textContent = doctor ? doctor.specialty : "-";
+  document.getElementById("sumDate").textContent = bookDate.value ? formatDate(bookDate.value) : "-";
+  document.getElementById("sumTime").textContent = selectedTime || "-";
+  document.getElementById("sumFee").textContent = doctor ? `$${doctor.fee}` : "-";
+}
+
+// Central handler whenever a hospital selection changes
+function onBookingChange() {
+  populateDoctors();
+  renderSlots();
+  updateSummary();
+}
+
+bookHospital.addEventListener("change", () => {
+  selectedTime = null;
+  onBookingChange();
+});
+bookDoctor.addEventListener("change", () => {
+  selectedTime = null;
+  renderSlots();
+  updateSummary();
+});
+bookDate.addEventListener("change", () => {
+  selectedTime = null;
+  renderSlots();
+  updateSummary();
+});
+
+// Choosing a time slot
+slotGrid.addEventListener("click", e => {
+  const slot = e.target.closest(".slot");
+  if (!slot || slot.disabled) return;
+  selectedTime = slot.dataset.time;
+  renderSlots();
+  updateSummary();
+  document.getElementById("errSlot").textContent = "";
+});
+
+// Validates the booking form and returns true when everything is valid
+function validateBooking() {
+  let valid = true;
+  const name = document.getElementById("patientName").value.trim();
+  const email = document.getElementById("patientEmail").value.trim();
+  const phone = document.getElementById("patientPhone").value.trim();
+  const reason = document.getElementById("patientReason").value;
+
+  const checks = [
+    ["errHospital", !bookHospital.value, "Please select a hospital."],
+    ["errDoctor", !bookDoctor.value, "Please select a doctor."],
+    ["errDate", !bookDate.value, "Please choose a date."],
+    ["errSlot", !selectedTime, "Please choose a time slot."],
+    ["errName", name.length < 2, "Please enter your full name."],
+    ["errEmail", !isValidEmail(email), "Please enter a valid email address."],
+    ["errPhone", !isValidPhone(phone), "Please enter a valid phone number."],
+    ["errReason", !reason, "Please select a reason for your visit."]
+  ];
+
+  checks.forEach(([id, failed, msg]) => {
+    document.getElementById(id).textContent = failed ? msg : "";
+    if (failed) valid = false;
+  });
+
+  // Also prevent booking a date in the past
+  if (bookDate.value && bookDate.value < getDateOffset(0)) {
+    document.getElementById("errDate").textContent = "Please choose today or a future date.";
+    valid = false;
+  }
+
+  return valid;
+}
+
+// Sets the date minimum to today so past dates cannot be picked
+bookDate.min = getDateOffset(0);
+
+// Submitting the booking form
+document.getElementById("bookForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const alertEl = document.getElementById("bookAlert");
+
+  if (!validateBooking()) {
+    flashAlert(alertEl, "error", "Please fix the highlighted fields and try again.");
+    return;
+  }
+
+  const appointment = {
+    id: Date.now(),
+    doctorId: bookDoctor.value,
+    date: bookDate.value,
+    time: selectedTime,
+    patient: document.getElementById("patientName").value.trim(),
+    reason: document.getElementById("patientReason").value,
+    status: "Confirmed"
+  };
+  appointments.push(appointment);
+
+  const doc = findDoctor(appointment.doctorId);
+  flashAlert(alertEl, "success",
+    `Booked! ${doc.name} on ${formatDate(appointment.date)} at ${appointment.time}. A confirmation has been sent to your email.`, 7000);
+
+  // Reset the form and selections for the next booking
+  e.target.reset();
+  selectedTime = null;
+  bookDoctor.disabled = true;
+  bookDoctor.innerHTML = `<option value="">Select a hospital first</option>`;
+  renderSlots();
+  updateSummary();
+  renderAppointments();
+});
+
+/* ---------- 13. HEALTH RECORDS (appointments + vitals) ---------- */
+
+// Renders the appointments table with cancel actions
+function renderAppointments() {
+  const body = document.getElementById("apptBody");
+  if (!appointments.length) {
+    body.innerHTML = `<tr><td colspan="6" class="empty-cell">No appointments yet. Book one from the Book page.</td></tr>`;
+    return;
+  }
+  body.innerHTML = appointments.map(a => {
+    const doc = findDoctor(a.doctorId);
+    const hospital = findHospital(doc.hospitalId);
+    const cancelled = a.status === "Cancelled";
+    return `
+      <tr>
+        <td>${escapeHtml(doc.name)}</td>
+        <td>${escapeHtml(hospital.name)}</td>
+        <td>${formatDate(a.date)}</td>
+        <td>${a.time}</td>
+        <td><span class="pill ${cancelled ? "cancelled" : ""}">${a.status}</span></td>
+        <td>${cancelled ? "-" : `<button class="link-btn" data-cancel="${a.id}">Cancel</button>`}</td>
+      </tr>`;
+  }).join("");
+}
+
+// Cancel an appointment (marks status and frees the slot)
+document.getElementById("apptBody").addEventListener("click", e => {
+  const btn = e.target.closest("[data-cancel]");
+  if (!btn) return;
+  const appt = appointments.find(a => a.id === Number(btn.dataset.cancel));
+  if (appt) appt.status = "Cancelled";
+  renderAppointments();
+  renderSlots(); // refresh slot availability on the booking page
+});
+
+// Renders the vitals history table
+function renderVitals() {
+  const body = document.getElementById("vitalsBody");
+  if (!vitals.length) {
+    body.innerHTML = `<tr><td colspan="4" class="empty-cell">No readings logged yet.</td></tr>`;
+    return;
+  }
+  body.innerHTML = [...vitals].reverse().map(v => `
+    <tr>
+      <td>${formatDate(v.date)}</td>
+      <td>${v.sys}/${v.dia} mmHg</td>
+      <td>${v.hr} bpm</td>
+      <td>${v.weight} kg</td>
+    </tr>`).join("");
+}
+
+// Validates and saves a new vitals reading
+document.getElementById("vitalsForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const date = document.getElementById("vDate").value;
+  const sys = Number(document.getElementById("vSys").value);
+  const dia = Number(document.getElementById("vDia").value);
+  const hr = Number(document.getElementById("vHr").value);
+  const weight = Number(document.getElementById("vWeight").value);
+  const err = document.getElementById("errVitals");
+  const dateErr = document.getElementById("errVDate");
+
+  dateErr.textContent = date ? "" : "Please choose a date.";
+
+  // Range checks keep obviously wrong values out of the record
+  const problems = [];
+  if (!(sys >= 70 && sys <= 250)) problems.push("systolic BP must be 70 to 250");
+  if (!(dia >= 40 && dia <= 150)) problems.push("diastolic BP must be 40 to 150");
+  if (!(hr >= 30 && hr <= 220)) problems.push("heart rate must be 30 to 220");
+  if (!(weight >= 20 && weight <= 300)) problems.push("weight must be 20 to 300 kg");
+
+  if (!date || problems.length) {
+    err.textContent = problems.length ? "Please check: " + problems.join(", ") + "." : "";
+    return;
+  }
+
+  vitals.push({ date, sys, dia, hr, weight });
+  err.textContent = "";
+  e.target.reset();
+  renderVitals();
+});
+
+/* ---------- 14. PRICING TOGGLE ---------- */
+
+// Switches all plan prices between monthly and yearly values
+document.getElementById("billingToggle").addEventListener("change", e => {
+  const yearly = e.target.checked;
+  document.querySelectorAll("#pricingGrid .price").forEach(p => {
+    const value = yearly ? p.dataset.yearly : p.dataset.monthly;
+    p.innerHTML = `$${value} <small>/ month</small>`;
+  });
+});
+
+/* ---------- 15. GALLERY + LIGHTBOX ---------- */
+
+const lightbox = document.getElementById("lightbox");
+const lbImg = document.getElementById("lbImg");
+const lbCaption = document.getElementById("lbCaption");
+let lbIndex = 0;
+
+// Builds the gallery grid from the image data
+function renderGallery() {
+  document.getElementById("galleryGrid").innerHTML = GALLERY.map((g, i) => `
+    <figure class="gallery-item reveal" style="--d:${(i % 3) * 0.1}s" data-index="${i}" tabindex="0" role="button" aria-label="Open image: ${escapeHtml(g.caption)}">
+      <img src="${g.thumb}" alt="${escapeHtml(g.caption)}" loading="lazy">
+      <div class="overlay"><span>${escapeHtml(g.caption)}</span></div>
+    </figure>`).join("");
+}
+
+// Opens the lightbox at a given image index
+function openLightbox(index) {
+  lbIndex = (index + GALLERY.length) % GALLERY.length;
+  lbImg.src = GALLERY[lbIndex].src;
+  lbImg.alt = GALLERY[lbIndex].caption;
+  lbCaption.textContent = `${lbIndex + 1} / ${GALLERY.length} · ${GALLERY[lbIndex].caption}`;
+  lightbox.classList.add("open");
+  document.body.style.overflow = "hidden"; // stop background scroll
+}
+
+function closeLightbox() {
+  lightbox.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+// Open lightbox when a gallery item is clicked or activated with the keyboard
+document.getElementById("galleryGrid").addEventListener("click", e => {
+  const item = e.target.closest(".gallery-item");
+  if (item) openLightbox(Number(item.dataset.index));
+});
+document.getElementById("galleryGrid").addEventListener("keydown", e => {
+  const item = e.target.closest(".gallery-item");
+  if (item && (e.key === "Enter" || e.key === " ")) {
+    e.preventDefault();
+    openLightbox(Number(item.dataset.index));
+  }
+});
+
+document.getElementById("lbClose").addEventListener("click", closeLightbox);
+document.getElementById("lbPrev").addEventListener("click", () => openLightbox(lbIndex - 1));
+document.getElementById("lbNext").addEventListener("click", () => openLightbox(lbIndex + 1));
+
+// Close when clicking the dark backdrop (not the image)
+lightbox.addEventListener("click", e => { if (e.target === lightbox) closeLightbox(); });
+
+// Keyboard navigation: Escape closes, arrow keys move between images
+document.addEventListener("keydown", e => {
+  if (!lightbox.classList.contains("open")) return;
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowLeft") openLightbox(lbIndex - 1);
+  if (e.key === "ArrowRight") openLightbox(lbIndex + 1);
+});
+
+/* ---------- 16. CONTACT FORM VALIDATION ---------- */
+
+document.getElementById("contactForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = document.getElementById("cName").value.trim();
+  const email = document.getElementById("cEmail").value.trim();
+  const subject = document.getElementById("cSubject").value;
+  const message = document.getElementById("cMessage").value.trim();
+
+  const checks = [
+    ["errCName", "cName", name.length < 2, "Please enter your name."],
+    ["errCEmail", "cEmail", !isValidEmail(email), "Please enter a valid email address."],
+    ["errCSubject", "cSubject", !subject, "Please choose a topic."],
+    ["errCMessage", "cMessage", message.length < 10, "Your message should be at least 10 characters."]
+  ];
+
+  let valid = true;
+  checks.forEach(([errId, fieldId, failed, msg]) => {
+    document.getElementById(errId).textContent = failed ? msg : "";
+    document.getElementById(fieldId).classList.toggle("invalid", failed);
+    if (failed) valid = false;
+  });
+
+  const alertEl = document.getElementById("contactAlert");
+  if (!valid) {
+    flashAlert(alertEl, "error", "Please correct the highlighted fields.");
+    return;
+  }
+
+  flashAlert(alertEl, "success", `Thank you, ${name}. Our care team will reply to ${email} within one working day.`, 7000);
+  e.target.reset();
+});
+
+/* ---------- 17. INITIALISATION ---------- */
+
+buildCarousel();
+goToSlide(0);
+startAutoplay();
+
+renderHomeDoctors();
+renderSpecialtyFilters();
+renderDoctorGrid();
+
+populateHospitals();
+populateDoctors();
+renderSlots();
+updateSummary();
+
+renderAppointments();
+renderVitals();
+renderGallery();
+
+// Run once on load to show the page from the URL hash, then start observers
+handleRoute();
+observeReveals();
+updateStickyCta();
+
+// Animate reveals on the home page after the preloader has faded
+window.addEventListener("load", () => setTimeout(observeReveals, 300));
+</script>
+
+</body>
+</html>
